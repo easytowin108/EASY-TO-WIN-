@@ -1,226 +1,634 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Master Pro | Edit & Track</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Win Rewards | Tasks & Redeem Codes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --neon: #bc13fe; --bg: #0b0e14; --glass: rgba(255, 255, 255, 0.05); }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); color: #fff; }
-        
-        .container { max-width: 550px; margin: 0 auto; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        h2 { color: var(--neon); text-align: center; margin-top: 0; }
-        input { width: 100%; padding: 14px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid rgba(188, 19, 254, 0.3); border-radius: 12px; color: #fff; box-sizing: border-box; outline: none; }
-        
-        button { width: 100%; padding: 14px; background: var(--neon); border: none; color: #fff; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-top: 5px; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(188, 19, 254, 0.4); }
+        :root {
+            --bg: #020617;
+            --gold: #fbbf24;
+            --card: rgba(30, 41, 59, 0.7);
+            --accent: #6366f1;
+            --premium-grad: linear-gradient(135deg, #1e1b4b, #311042);
+        }
 
-        #historyContainer { display: flex; flex-direction: column; gap: 15px; }
-        .history-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 18px; border-radius: 15px; transition: 0.3s; }
-        
-        .slug-row { display: flex; justify-content: space-between; align-items: center; }
-        .slug-name { font-size: 1.1rem; font-weight: bold; color: #00ffcc; }
-        .click-count { background: #00ffcc; color: #000; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
-        
-        .link-url { font-size: 0.8rem; color: #888; word-break: break-all; margin: 10px 0; display: block; }
-        .time-info { font-size: 0.65rem; color: #555; margin-bottom: 12px; line-height: 1.4; }
-        
-        .action-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn-action { padding: 8px; font-size: 0.75rem; border-radius: 8px; text-align: center; cursor: pointer; border:none; color:white; }
-        .copy-btn { background: #333; }
-        .edit-btn { background: #e67e22; }
-        .del-btn { background: #c0392b; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-        .hidden { display: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        /* Header UI */
+        header {
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 1px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-audio-btn {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .notif-trigger {
+            position: relative;
+            cursor: pointer;
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        #badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            display: none;
+            border: 2px solid var(--bg);
+        }
+
+        /* Full Screen Notification Overlay */
+        #fullScreenNotif {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 2000;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .fs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .notif-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-n {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-back { background: #334155; color: white; }
+        .btn-join { background: var(--gold); color: #000; }
+
+        .btn-delete-local {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Floating Button */
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            background: linear-gradient(105deg, #4f46e5, #a855f7);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 999;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Grid System */
+        .container {
+            padding: 30px 15px;
+            max-width: 450px;
+            margin: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .btn-main {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background: var(--card);
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 1;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1;
+        }
+
+        .btn-main:hover .card-img {
+            transform: scale(1.06);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+            background: linear-gradient(to top, rgba(2, 6, 23, 1) 0%, rgba(2, 6, 23, 0.8) 50%, rgba(2, 6, 23, 0.2) 80%, transparent 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.3;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card-icon {
+            font-size: 12px;
+            color: var(--gold);
+            flex-shrink: 0;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Universal Engine Viewer Overlay */
+        #htmlCodeModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020617;
+            z-index: 3000;
+            flex-direction: column;
+        }
+
+        .html-modal-header {
+            padding: 12px 20px;
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 55px;
+            box-sizing: border-box;
+        }
+
+        .html-frame {
+            width: 100%;
+            height: calc(100% - 55px);
+            border: none;
+            background: #020617;
+        }
+
+        /* Simple Audio/Loader Gateway Styles for fallback */
+        .gateway-panel {
+            padding: 20px;
+            background: var(--card);
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
 
+<header>
+    <div class="logo">EASY TASKS • WIN REWARDS</div>
+    <div class="nav-actions">
+        <button class="dashboard-audio-btn" id="dashboardMToggle" onclick="window.toggleMuteState()"><i class="fas fa-volume-high"></i></button>
+        <div class="notif-trigger" onclick="window.openNotifs()">
+            <i class="fas fa-bell"></i>
+            <span id="badge">0</span>
+        </div>
+    </div>
+</header>
+
+<button id="floatingBtn" class="floating-btn">
+    <i class="fas fa-download"></i>
+    <span id="fText">Download App</span>
+</button>
+
+<!-- Viewer Modal -->
+<div id="htmlCodeModal">
+    <div class="html-modal-header">
+        <h3 id="htmlModalTitle" style="margin:0; font-size:16px; font-weight:700; color:var(--gold);">TASK LAYER</h3>
+        <button onclick="window.closeCodeEngine()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px;">
+            <i class="fas fa-arrow-left"></i> EXIT GAME 
+        </button>
+    </div>
+    <iframe id="sandboxFrame" class="html-frame"></iframe>
+</div>
+
+<!-- Inbox Modal -->
+<div id="fullScreenNotif">
+    <div class="fs-header">
+        <h2 style="margin:0; font-size: 24px;">Inbox</h2>
+        <i class="fas fa-times" style="font-size: 28px; cursor: pointer;" onclick="window.closeNotifs()"></i>
+    </div>
+    <div id="notifList"></div>
+</div>
+
 <div class="container">
-    <div id="login-ui" class="card hidden">
-        <h2>CREATE Username</h2>
-        <input type="text" id="usernameField" placeholder="@your_name">
-        <button onclick="handleLogin()">Login</button>
-    </div>
-
-    <div id="dashboard-ui" class="hidden">
-        <div class="header">
-            <span id="userTag" style="color:var(--neon); font-weight:bold;"></span>
-            <button onlick="handleLogout()" style="width:auto; padding:5px 12px; background:#222; font-size:0.7rem;">HELLO USERS WELCOME TO RUDRA LINK SHORTENER</button>
-        </div>
-
-        <div class="card">
-           <h2 id="formTitle"> Customize your Link </h2>
-            <h2 id="formTitle">RUDRA LINK SHORTENER</h2>
-            <input type="url" id="longUrl" placeholder="Target URL (https://...)">
-            <input type="text" id="customSlug" placeholder="Custom Name (slug)">
-            <button id="mainBtn" onclick="createNewLink()">Create Link</button>
-            <button id="cancelEdit" class="hidden" onclick="resetForm()" style="background:#444;">Cancel Edit</button>
-        </div>
-
-        <h3 style="margin: 30px 0 15px; border-left: 4px solid var(--neon); padding-left: 10px;">Your Unlimited History</h3>
-        <div id="historyContainer"></div>
-    </div>
-
-    <div id="redirect-ui" class="card hidden" style="text-align:center;">
-        <h2 style="color:#00ffcc;">Redirecting...</h2>
+    <!-- Quick Audio Init Gateway Option if required -->
+    <div class="grid-container" id="buttonContainer">
+        <p style="text-align:center; color:#64748b; grid-column: span 2;">Connecting System Engine...</p>
     </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBjv193gNBhYKjXxk9Q4iHXqcVTHeD9IXM",
-        authDomain: "watch-1b375.firebaseapp.com",
-        databaseURL: "https://watch-1b375-default-rtdb.firebaseio.com",
-        projectId: "watch-1b375",
-        storageBucket: "watch-1b375.firebasestorage.app",
-        messagingSenderId: "963767546203",
-        appId: "1:963767546203:web:7788de1edf0a15c5a36a7e"
+    const firebaseConfig = { 
+        apiKey: "AIzaSyDnM9ry5JreqjRXqQVUSiaBzudXuaAF-QI", 
+        databaseURL: "https://send-message-b178e-default-rtdb.asia-southeast1.firebasedatabase.app" 
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    let user = localStorage.getItem('active_username');
-    let editingSlug = null; // Track if we are editing
 
-    // --- Redirection Logic ---
-    const q = new URLSearchParams(window.location.search);
-    const slugID = q.get('id');
+    let audioCtx = null;
+    let isMuted = false;
+    let htmlTasksStorage = {}; 
 
-    if (slugID) {
-        document.getElementById('redirect-ui').classList.remove('hidden');
-        get(ref(db, 'links/' + slugID)).then(async (snap) => {
-            if (snap.exists()) {
-                await update(ref(db, 'links/' + slugID), { clicks: (snap.val().clicks || 0) + 1 });
-                window.location.replace(snap.val().url);
-            } else { alert("Link not valid!"); window.location.href = window.location.pathname; }
-        });
-    } else if (!user) {
-        document.getElementById('login-ui').classList.remove('hidden');
-    } else {
-        startApp();
+    function initAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
     }
 
-    // --- Account Logic ---
-    window.handleLogin = () => {
-        let name = document.getElementById('usernameField').value.trim();
-        if (name.length < 3) return alert("Username too short!");
-        localStorage.setItem('active_username', name.startsWith('@') ? name : '@' + name);
-        location.reload();
-    };
-    window.handleLogout = () => { localStorage.removeItem('active_username'); location.reload(); };
+    function playCinematicSound(type) {
+        if (isMuted) return;
+        initAudioContext();
+        if (!audioCtx || audioCtx.state === 'suspended') return;
+        
+        const playTone = (freq, waveType, duration, vol = 0.12) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = waveType;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        };
 
-    function startApp() {
-        document.getElementById('dashboard-ui').classList.remove('hidden');
-        document.getElementById('userTag').innerText = user;
-        loadHistory();
+        if (type === 'click') {
+            playTone(750, 'sine', 0.12, 0.1);
+        }
     }
 
-    // --- Create OR Update Link ---
-    window.createNewLink = async () => {
-        const url = document.getElementById('longUrl').value.trim();
-        const slug = document.getElementById('customSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-
-        if (!url || !slug) return alert("Both fields are required!");
+    // ADVANCED SECURE REDIRECT ENGINE
+    window.processSecureRedirect = (targetUrl) => {
+        if (!targetUrl || targetUrl.trim() === "") return;
+        let target = targetUrl.trim();
+        
+        if (target.startsWith("http://")) {
+            target = target.replace("http://", "https://");
+        }
+        target = encodeURI(decodeURI(target));
 
         try {
-            // Check if slug is taken (only if name changed or new link)
-            if (slug !== editingSlug) {
-                const checkSnap = await get(ref(db, 'links/' + slug));
-                if (checkSnap.exists()) return alert("This custom name is already taken!");
-            }
-
-            const payload = {
-                url: url,
-                owner: user,
-                clicks: 0,
-                created: new Date().toLocaleString(),
-                updated: editingSlug ? new Date().toLocaleString() : "Never"
-            };
-
-            // If editing and slug changed, delete old one
-            if (editingSlug && editingSlug !== slug) {
-                const oldData = await get(ref(db, 'links/' + editingSlug));
-                payload.clicks = oldData.val().clicks || 0; // Carry over clicks
-                payload.created = oldData.val().created;
-                await remove(ref(db, 'links/' + editingSlug));
-            } else if (editingSlug === slug) {
-                const oldData = await get(ref(db, 'links/' + editingSlug));
-                payload.clicks = oldData.val().clicks || 0;
-                payload.created = oldData.val().created;
-            }
-
-            await set(ref(db, 'links/' + slug), payload);
-            alert(editingSlug ? "Link Updated!" : "Link Created!");
-            resetForm();
-        } catch (e) { alert("Database Error!"); }
+            window.top.location.href = target;
+        } catch (e) {
+            window.location.href = target;
+        }
     };
 
-    // --- History Loader ---
-    function loadHistory() {
-        onValue(ref(db, 'links'), (snap) => {
-            const data = snap.val();
-            const container = document.getElementById('historyContainer');
-            container.innerHTML = '';
-            if (!data) return;
+    window.toggleMuteState = () => {
+        isMuted = !isMuted;
+        const dBtn = document.getElementById('dashboardMToggle');
+        const iconClass = isMuted ? 'fa-volume-xmark' : 'fa-volume-high';
+        if(dBtn) dBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
+    };
 
-            Object.keys(data).reverse().forEach(id => {
-                if (data[id].owner === user) {
-                    const item = data[id];
-                    const shortUrl = window.location.origin + window.location.pathname + "?id=" + id;
-                    container.innerHTML += `
-                        <div class="history-card">
-                            <div class="slug-row">
-                                <span class="slug-name">/${id}</span>
-                                <span class="click-count">${item.clicks} Clicks</span>
-                            </div>
-                            <span class="link-url">${item.url}</span>
-                            <div class="time-info"><b>Created:</b> ${item.created}<br><b>Edited:</b> ${item.updated}</div>
-                            <div class="action-btns">
-                                <button class="btn-action copy-btn" onclick="copyToClipboard('${shortUrl}')">Copy</button>
-                                <button class="btn-action edit-btn" onclick="startEdit('${id}', '${item.url}')">Edit</button>
-                                <button class="btn-action del-btn" onclick="deleteLink('${id}')">Delete</button>
-                            </div>
-                        </div>`;
-                }
-            });
+    if(!localStorage.getItem('join_date')) localStorage.setItem('join_date', Date.now());
+    const joinDate = parseInt(localStorage.getItem('join_date'));
+    let localDeleted = JSON.parse(localStorage.getItem('deleted_notifs')) || [];
+
+    window.openNotifs = () => {
+        document.getElementById('fullScreenNotif').style.display = 'flex';
+        localStorage.setItem('last_check', Date.now());
+        renderNotifs();
+    };
+
+    window.closeNotifs = () => {
+        document.getElementById('fullScreenNotif').style.display = 'none';
+        updateBadge();
+    };
+
+    let globalNotifs = [];
+    onValue(ref(db, 'notif_history'), (snap) => {
+        globalNotifs = snap.exists() ? Object.entries(snap.val()) : [];
+        renderNotifs();
+        updateBadge();
+    });
+
+    function renderNotifs() {
+        const list = document.getElementById('notifList');
+        list.innerHTML = "";
+        const active = globalNotifs.filter(([key, n]) => n.id > joinDate && !localDeleted.includes(key)).reverse();
+        
+        if(active.length === 0) {
+            list.innerHTML = "<p style='text-align:center; color:#64748b; margin-top:50px;'>No new alerts.</p>";
+            return;
+        }
+
+        active.forEach(([key, n]) => {
+            const card = document.createElement('div');
+            card.className = 'notif-card';
+            
+            card.innerHTML = `
+                <button class="btn-delete-local" id="del-notif-${key}"><i class="fas fa-trash"></i></button>
+                <div style="color:var(--gold); font-weight:800; font-size:12px; margin-bottom:8px;">NEW ALERTS</div>
+                <div style="font-size:14px; line-height:1.4; color: #fff;">${n.message}</div>
+                <div class="btn-group">
+                    <button class="btn-n btn-back" onclick="window.closeNotifs()">BACK</button>
+                    <button class="btn-n btn-join" id="notif-btn-${key}">OPEN TARGET</button>
+                </div>
+            `;
+            list.appendChild(card);
+            
+            document.getElementById(`notif-btn-${key}`).onclick = () => {
+                window.processSecureRedirect(n.targetLink);
+            };
+            document.getElementById(`del-notif-${key}`).onclick = () => {
+                window.removeLocal(key);
+            };
         });
     }
 
-    // --- Action Helpers ---
-    window.startEdit = (id, url) => {
-        editingSlug = id;
-        document.getElementById('longUrl').value = url;
-        document.getElementById('customSlug').value = id;
-        document.getElementById('formTitle').innerText = "Editing Link: /" + id;
-        document.getElementById('mainBtn').innerText = "Update & Save";
-        document.getElementById('cancelEdit').classList.remove('hidden');
-        window.scrollTo(0,0);
+    function updateBadge() {
+        const lastCheck = parseInt(localStorage.getItem('last_check') || 0);
+        const count = globalNotifs.filter(([key, n]) => n.id > joinDate && n.id > lastCheck && !localDeleted.includes(key)).length;
+        const b = document.getElementById('badge');
+        b.innerText = count;
+        b.style.display = count > 0 ? 'block' : 'none';
+    }
+
+    window.removeLocal = (k) => {
+        localDeleted.push(k);
+        localStorage.setItem('deleted_notifs', JSON.stringify(localDeleted));
+        renderNotifs();
+        updateBadge();
     };
 
-    window.resetForm = () => {
-        editingSlug = null;
-        document.getElementById('longUrl').value = '';
-        document.getElementById('customSlug').value = '';
-        document.getElementById('formTitle').innerText = "Customize New Link";
-        document.getElementById('mainBtn').innerText = "Create Link";
-        document.getElementById('cancelEdit').classList.add('hidden');
+    // FLOATING CTA BUTTON LINK
+    onValue(ref(db, 'floating_button'), (snap) => {
+        const data = snap.val();
+        const fBtn = document.getElementById('floatingBtn');
+        if (data && data.active){
+            fBtn.style.display = 'flex';
+            fBtn.onclick = () => {
+                window.processSecureRedirect(data.link);
+            };
+            document.getElementById('fText').innerText = data.name;
+        } else {
+            fBtn.style.display = 'none';
+        }
+    });
+
+    // CUSTOM HTML RUNTIME CORE
+    window.launchHtmlCode = (slotId, title) => {
+        const targetedData = htmlTasksStorage[slotId];
+        if(!targetedData || targetedData.trim() === "") {
+            alert("TASK COMING SOON");
+            return;
+        }
+        
+        const cleanData = targetedData.trim();
+        const isUrlPattern = cleanData.match(/^https?:\/\/[^\s]+$/i);
+
+        if(isUrlPattern) {
+            window.processSecureRedirect(cleanData);
+        } else {
+            document.getElementById('htmlModalTitle').innerText = title;
+            document.getElementById('htmlCodeModal').style.display = 'flex';
+            const frame = document.getElementById('sandboxFrame');
+            frame.src = "about:blank"; 
+            frame.contentWindow.document.open();
+            frame.contentWindow.document.write(cleanData);
+            frame.contentWindow.document.close();
+        }
     };
 
-    window.deleteLink = async (id) => {
-        if (confirm("Delete /" + id + "?")) await remove(ref(db, 'links/' + id));
+    window.closeCodeEngine = () => {
+        document.getElementById('htmlCodeModal').style.display = 'none';
+        document.getElementById('sandboxFrame').src = "about:blank"; 
     };
 
-    window.copyToClipboard = (txt) => {
-        navigator.clipboard.writeText(txt);
-        alert("Copied!");
-    };
+    // UNIFIED REALTIME GRID SYSTEM
+    onValue(ref(db, 'app_links'), (linksSnap) => {
+        onValue(ref(db, 'custom_html_tasks'), (htmlTasksSnap) => {
+            const container = document.getElementById('buttonContainer');
+            container.innerHTML = "";
+            
+            const linksData = linksSnap.val();
+            const htmlTasksData = htmlTasksSnap.val() || {};
+
+            // Render Path A: Custom HTML Tasks Engine (t1 - t5)
+            for(let i = 1; i <= 5; i++) {
+                const task = htmlTasksData[`t${i}`];
+                if(task && task.active) {
+                    htmlTasksStorage[`t${i}`] = task.htmlCode || "";
+
+                    const htmlBtn = document.createElement('div');
+                    htmlBtn.className = 'btn-main';
+                    htmlBtn.id = `html-task-btn-t${i}`;
+
+                    let imgTag = task.image ? `<img src="${task.image}" class="card-img" onerror="this.style.display='none'">` : "";
+                    const isUrlLink = (task.htmlCode || "").trim().match(/^https?:\/\/[^\s]+$/i);
+                    const actionIcon = isUrlLink ? 'fa-external-link-alt' : 'fa-play';
+
+                    htmlBtn.innerHTML = `
+                        ${imgTag}
+                        <div class="card-content">
+                            <span class="card-title">${task.name || `Live Task ${i}`}</span>
+                            <div class="card-icon"><i class="fas ${actionIcon}"></i></div>
+                        </div>
+                    `;
+                    container.appendChild(htmlBtn);
+                    
+                    document.getElementById(`html-task-btn-t${i}`).onclick = () => {
+                        window.launchHtmlCode(`t${i}`, task.name || `Task ${i}`);
+                    };
+                }
+            }
+
+            // Render Path B: Dynamic Dashboard Buttons (b1 - b5)
+            if(linksData) {
+                Object.keys(linksData).forEach(k => {
+                    const b = linksData[k];
+                    if (b && b.active === true) {
+                        const btn = document.createElement('div');
+                        btn.className = 'btn-main';
+                        btn.id = `dynamic-link-btn-${k}`;
+
+                        let imgTag = b.image ? `<img src="${b.image}" class="card-img" onerror="this.style.display='none'">` : "";
+                        btn.innerHTML = `
+                            ${imgTag}
+                            <div class="card-content">
+                                <span class="card-title">${b.name || 'Task Box'}</span>
+                                <div class="card-icon"><i class="fas ${b.isPremium ? 'fa-lock' : 'fa-chevron-right'}"></i></div>
+                            </div>
+                        `;
+                        container.appendChild(btn);
+                        
+                        document.getElementById(`dynamic-link-btn-${k}`).onclick = () => {
+                            if (b.isPremium) {
+                                alert("PREMIUM TASK COMING SOON");
+                            } else if(b.url) {
+                                window.processSecureRedirect(b.url);
+                            }
+                        };
+                    }
+                });
+            }
+
+            if(container.innerHTML === "") {
+                container.innerHTML = "<p style='text-align:center; color:#64748b; grid-column: span 2;'>No active tasks available.</p>";
+            }
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if(e.target.closest('button') || e.target.closest('.btn-main') || e.target.closest('.notif-trigger')) {
+            playCinematicSound('click');
+        }
+    });
+
+    // Make functions globally accessible
+    window.toggleMuteState = toggleMuteState;
+    window.launchHtmlCode = launchHtmlCode;
+    window.closeCodeEngine = closeCodeEngine;
 </script>
 </body>
 </html>
